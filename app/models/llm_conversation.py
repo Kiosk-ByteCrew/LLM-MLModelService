@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel, Field
 
+
 class LlmMessageContent(BaseModel):
     id: str = Field(..., description="The id of the message")
     content: str = Field(..., description="The content of the message")
@@ -11,12 +12,13 @@ class LlmMessageContent(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "id": "uid1_sesId1_2", #userId_sesseionId_messagecounter
+                "id": "uid1_sesId1_2",  # userId_sesseionId_messagecounter
                 "content": "Hi, suggest a burger.",
                 "content_type": "text",
                 "created_time": 1733005478.182
             }
         }
+
 
 class LlmConversationRequest(BaseModel):
     user_id: str = Field(..., description="Unique identifier for the user.")
@@ -45,19 +47,30 @@ class LlmConversationRequest(BaseModel):
 
 
 class LlmConversationResponse(BaseModel):
-    user_id: str = Field(..., description="Unique identifier for the user.")
     session_id: str = Field(..., description="Unique identifier for the session.")
-    message_id: str = Field(..., description="Unique identifier for the conversation.")
     prompt_response: str = Field(..., description="Prompt response of the conversation.")
-    timezone: str = Field(..., description="Timezone of the conversation.")
+    action: dict = Field(..., description="action")
 
     class Config:
         schema_extra = {
             "example": {
-                "user_id": "uid1",
                 "session_id": "sesid1",
-                "message_id": "uid1_sesId1_2",
                 "prompt_response": "We have a Veggie Delight that will go perfectly with your preferences.",
-                "timezone": "America/New_York"
+                "action": {"finalize_order": 1}
+            }
+        }
+
+
+class LlmStaticConversationRequest(BaseModel):
+    session_id: str = Field(..., description="Unique identifier for the session.")
+    message: str = Field(..., description="Messages sent by the user.")
+    start_conversation: bool = Field(..., description="Is this message start of conversation.")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "session_id": "sesid1",
+                "message": "Hi, suggest a burger.",
+                "start_conversation": True
             }
         }
